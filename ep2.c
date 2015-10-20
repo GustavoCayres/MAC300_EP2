@@ -19,9 +19,21 @@ double inner_product(double v1[], double v2[], int size_v) {
 	for (i = 0; i < size_v; i ++)
 		inner_product += v1[i]*v2[i];
 	
-	return inner_product
+	return inner_product;
 }
 
+/* calculates the A-norm of vector v */
+double A_norm(double A[][nmax], double v[], int size) {
+	int i, j;
+	double temp[nmax];
+
+	for (i = 0; i < size; i ++)
+		temp [i] = 0;
+		for (j = 0; j < size; j ++)
+			temp[i] += A[i][j]*v[j]
+
+	return sqrt(inner_product(v, temp))
+}
 
 /*
 int lucol(int n, double A[][nmax], int p[]) {
@@ -48,9 +60,19 @@ int lucol(int n, double A[][nmax], int p[]) {
 	return 0;
 }
 */
-void conjugate_gradient(int size_A, double A[][nmax], double b[]){
+void conjugate_gradient(double A[][nmax], double b[], int size, int n_steps) {
+	double x[], r[], p[], alfa, beta;
+	int i;
 
-	for (k = )
+	for (i = 0; i < size; i ++) {
+		x[i] = 0;
+		r[i] = b[i];
+		p[i] = b[i];
+	}
+
+	for (i = 1; i < n_steps; i ++) {
+		alfa = inner_product(r, r, size)
+	}
 }
 
 int main() {
