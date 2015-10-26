@@ -22,6 +22,19 @@ double inner_product(double v1[], double v2[], int size_v) {
 	return inner_product;
 }
 
+/* calculates the multiplication between a matrix and a vector */
+double * matrix_x_vector(double A[][nmax], double v[], int size) {
+	int i, j;
+	double temp[nmax];
+
+	for (i = 0; i < size; i ++) {
+		temp [i] = 0;
+		for (j = 0; j < size; j ++)
+			temp[i] += A[i][j]*v[j];
+
+	return temp;
+}
+
 /* calculates the A-norm of vector v */
 double A_norm(double A[][nmax], double v[], int size) {
 	int i, j;
@@ -30,7 +43,7 @@ double A_norm(double A[][nmax], double v[], int size) {
 	for (i = 0; i < size; i ++) {
 		temp [i] = 0;
 		for (j = 0; j < size; j ++)
-			temp[i] += A[i][j]*v[j]
+			temp[i] += A[i][j]*v[j];
 	}
 
 	return sqrt(inner_product(v, temp))
@@ -85,7 +98,7 @@ int lucol(int n, double A[][nmax], int p[]) {
 }
 */
 void conjugate_gradient(double A[][nmax], double b[], int size, int n_steps) {
-	double x[], r[], p[], alfa, beta;
+	double x[], r[], p[], rnew, rold, alfa, beta;
 	int i;
 
 	for (i = 0; i < size; i ++) {
@@ -94,8 +107,17 @@ void conjugate_gradient(double A[][nmax], double b[], int size, int n_steps) {
 		p[i] = b[i];
 	}
 
+	rold = inner_product(r, r, size);
+
 	for (i = 1; i < n_steps; i ++) {
-		alfa = inner_product(r, r, size)/ A_norm(A, r, size);
+		alfa = rold / A_norm(A, p, size);
+		x = vector_sum(x, vector_by_a_scalar(p, alfa, size), size, 1);
+		r = vector_sum(r, vector_by_a_scalar(matrix_x_vector(A, p, size), alfa, size), size, -1);
+		rnew = inner_product(r, r, size)
+		if (sqrt(rnew) < 1e-10) /* talvez guardar esse inner_product em uma variavel no inicio do lasso para nao ter q calcular denovo*/
+            break;
+        p = vector_sum(r,vector_by_a_scalar(p ,rnew / rold), size), size, 1);
+		rold = rnew;
 	}
 }
 
