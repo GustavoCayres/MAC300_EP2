@@ -27,12 +27,36 @@ double A_norm(double A[][nmax], double v[], int size) {
 	int i, j;
 	double temp[nmax];
 
-	for (i = 0; i < size; i ++)
+	for (i = 0; i < size; i ++) {
 		temp [i] = 0;
 		for (j = 0; j < size; j ++)
 			temp[i] += A[i][j]*v[j]
+	}
 
 	return sqrt(inner_product(v, temp))
+}
+
+/* multiplies a vector by a scalar */
+double * vector_by_a_scalar(double v[], double alfa, int size) {
+	int i;
+	double temp[size];
+
+	for (i = 0; i < size; i ++)
+		temp[i] = v[i]*alfa;
+
+	return result;  
+}
+
+/* Sum vectors, if operation = 1 it'll sum v1+v2, if it is -1 it'll subtract */
+double * vector_sum(double v1[], double v2[], int size, int operation) {
+	int i;
+	double temp[size];
+
+	for (i = 0; i < size; i ++)
+		temp[i] = v1[i] + operation*v2[i];
+
+	return temp;
+
 }
 
 /*
@@ -71,7 +95,7 @@ void conjugate_gradient(double A[][nmax], double b[], int size, int n_steps) {
 	}
 
 	for (i = 1; i < n_steps; i ++) {
-		alfa = inner_product(r, r, size)
+		alfa = inner_product(r, r, size)/ A_norm(A, r, size);
 	}
 }
 
