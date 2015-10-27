@@ -23,7 +23,7 @@ double inner_product(double v1[], double v2[], int size_v) {
 }
 
 /* calculates the multiplication between a matrix and a vector */
-void matrix_x_vector(double A[][nmax], double v[], int size, double aux) {
+void matrix_vector_product(double A[][nmax], double v[], int size, double aux[]) {
 	int i, j;
 
 	for (i = 0; i < size; i ++) {
@@ -33,47 +33,37 @@ void matrix_x_vector(double A[][nmax], double v[], int size, double aux) {
 	}
 }
 
-/* calculates the A-norm of vector v */
-/*double A_norm(double A[][nmax], double v[], int size) {
-	int i, j;
-	double temp[nmax];
-
-	for (i = 0; i < size; i ++) {
-		temp [i] = 0;
-		for (j = 0; j < size; j ++)
-			temp[i] += A[i][j]*v[j];
-	}
-
-	return sqrt(inner_product(v, temp))
-}*/
-
 /* multiplies a vector by a scalar */
-void vector_by_a_scalar(double v[], double alfa, int size) {
+void vector_scalar_product(double v[], double alfa, int size) {
 	int i;
 
 	for (i = 0; i < size; i ++)
 		v[i] = v[i]*alfa;
 }
 
-/* multiplies a vector by a scalar and puts on the 4th argument*/
-void vector_by_a_scalar_new_vector(double v[], double alfa, int size, double result[]) {
+/* multiplies a vector by a scalar and puts the result on the 4th argument*/
+void vector_scalar_product_new_vector(double v[], double alfa, int size, double result[]) {
 	int i;
 
 	for (i = 0; i < size; i ++)
-		result= v[i]*alfa;
- 
+		result[i] = v[i]*alfa;
 }
 
-/* Sum vectors, if operation = 1 it'll sum v1+v2, if it is -1 it'll subtract */
-void vector_sum(double v1[], double v2[], int size, int operation) {
+/* adds vectors v1 and v2 */
+void vector_sum(double v1[], double v2[], int size) {
 	int i;
-	double temp[size];
 
 	for (i = 0; i < size; i ++)
-		v1[i] += operation*v2[i];
-
+		v1[i] += v2[i];
 }
 
+/* subtracts vector v2 from v1 */
+void vector_subtraction(double v1[], double v2[], int size) {
+	int i;
+
+	for (i = 0; i < size; i ++)
+		v1[i] -= v2[i];
+}
 
 void conjugate_gradient(double A[][nmax], double b[], int size, int n_steps) {
 	double x[size], r[size], p[size], pA[size], aux[size], rnew, rold, alfa, beta;
@@ -88,12 +78,12 @@ void conjugate_gradient(double A[][nmax], double b[], int size, int n_steps) {
 	rold = inner_product(r, r, size);
 
 	for (i = 1; i < n_steps; i ++) {
-		matrix_x_vector(A, p, size, pA); /* resposta no pA */
+		matrix_vector_product(A, p, size, pA); /* resposta no pA */
 		alfa = rold / inner_product(p, pA, size);
 		vector_by_a_scalar_new_vector(p, alfa, size, aux); 
-		vector_sum(x, aux, size, 1); /* atualiza o próprio x */
+		vector_sum(x, aux, size); /* atualiza o próprio x */
 		vector_by_a_scalar_new_vector(pA, alfa, size, aux);
-		vector_sum(r, aux, size, -1); /* atualiza o próprio r */
+		vector_subtraction(r, aux, size); /* atualiza o próprio r */
 		rnew = inner_product(r, r, size);
 		if (sqrt(rnew) < 1e-10)
             break;
