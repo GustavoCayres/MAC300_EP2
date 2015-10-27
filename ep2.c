@@ -23,16 +23,14 @@ double inner_product(double v1[], double v2[], int size_v) {
 }
 
 /* calculates the multiplication between a matrix and a vector */
-double * matrix_x_vector(double A[][nmax], double v[], int size) {
+void matrix_x_vector(double A[][nmax], double v[], int size, double aux) {
 	int i, j;
-	double temp[nmax];
 
 	for (i = 0; i < size; i ++) {
-		temp [i] = 0;
+		aux[i] = 0;
 		for (j = 0; j < size; j ++)
-			temp[i] += A[i][j]*v[j];
-
-	return temp;
+			aux[i] += A[i][j]*v[j];
+	}
 }
 
 /* calculates the A-norm of vector v */
@@ -50,30 +48,35 @@ double * matrix_x_vector(double A[][nmax], double v[], int size) {
 }*/
 
 /* multiplies a vector by a scalar */
-double * vector_by_a_scalar(double v[], double alfa, int size) {
+void vector_by_a_scalar(double v[], double alfa, int size) {
 	int i;
-	double temp[size];
 
 	for (i = 0; i < size; i ++)
-		temp[i] = v[i]*alfa;
+		v[i] = v[i]*alfa;
+}
 
-	return temp;  
+/* multiplies a vector by a scalar and puts on the 4th argument*/
+void vector_by_a_scalar_new_vector(double v[], double alfa, int size, double result[]) {
+	int i;
+
+	for (i = 0; i < size; i ++)
+		result= v[i]*alfa;
+ 
 }
 
 /* Sum vectors, if operation = 1 it'll sum v1+v2, if it is -1 it'll subtract */
-double * vector_sum(double v1[], double v2[], int size, int operation) {
+void vector_sum(double v1[], double v2[], int size, int operation) {
 	int i;
 	double temp[size];
 
 	for (i = 0; i < size; i ++)
-		temp[i] = v1[i] + operation*v2[i];
-
-	return temp;
+		v1[i] += operation*v2[i];
 
 }
 
+
 void conjugate_gradient(double A[][nmax], double b[], int size, int n_steps) {
-	double x[], r[], p[], aux[], rnew, rold, alfa, beta;
+	double x[size], r[size], p[size], pA[size], aux[size], rnew, rold, alfa, beta;
 	int i;
 
 	for (i = 0; i < size; i ++) {
@@ -85,15 +88,22 @@ void conjugate_gradient(double A[][nmax], double b[], int size, int n_steps) {
 	rold = inner_product(r, r, size);
 
 	for (i = 1; i < n_steps; i ++) {
-		aux = matrix_x_vector(A, p, size);
-		alfa = rold / inner_product(p, aux, size);
-		x = vector_sum(x, vector_by_a_scalar(p, alfa, size), size, 1);
-		r = vector_sum(r, vector_by_a_scalar(aux, alfa, size), size, -1); /*matrix_x_vector tem uma conta a menos que A_norm, decidir o q fazer*/
-		rnew = inner_product(r, r, size)
-		if (sqrt(rnew) < 1e-10) /* talvez guardar esse inner_product em uma variavel no inicio do lasso para nao ter q calcular denovo*/
+		matrix_x_vector(A, p, size, pA); /* resposta no pA */
+		alfa = rold / inner_product(p, pA, size);
+		vector_by_a_scalar_new_vector(p, alfa, size, aux); 
+		vector_sum(x, aux, size, 1); /* atualiza o próprio x */
+		vector_by_a_scalar_new_vector(pA, alfa, size, aux);
+		vector_sum(r, aux, size, -1); /* atualiza o próprio r */
+		rnew = inner_product(r, r, size);
+		if (sqrt(rnew) < 1e-10)
             break;
-        p = vector_sum(r,vector_by_a_scalar(p ,rnew / rold), size), size, 1);
+
+        vector_sum(vector_by_a_scalar(p ,rnew / rold, size), r, size), size, 1);
 		rold = rnew;
+	}
+
+	for (i = 0; i < size; i ++) {
+		b[i] = x[i];
 	}
 }
 
