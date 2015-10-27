@@ -36,7 +36,7 @@ double * matrix_x_vector(double A[][nmax], double v[], int size) {
 }
 
 /* calculates the A-norm of vector v */
-double A_norm(double A[][nmax], double v[], int size) {
+/*double A_norm(double A[][nmax], double v[], int size) {
 	int i, j;
 	double temp[nmax];
 
@@ -47,7 +47,7 @@ double A_norm(double A[][nmax], double v[], int size) {
 	}
 
 	return sqrt(inner_product(v, temp))
-}
+}*/
 
 /* multiplies a vector by a scalar */
 double * vector_by_a_scalar(double v[], double alfa, int size) {
@@ -57,7 +57,7 @@ double * vector_by_a_scalar(double v[], double alfa, int size) {
 	for (i = 0; i < size; i ++)
 		temp[i] = v[i]*alfa;
 
-	return result;  
+	return temp;  
 }
 
 /* Sum vectors, if operation = 1 it'll sum v1+v2, if it is -1 it'll subtract */
@@ -72,33 +72,8 @@ double * vector_sum(double v1[], double v2[], int size, int operation) {
 
 }
 
-/*
-int lucol(int n, double A[][nmax], int p[]) {
-	int i, j, k, imax;
-	for (k = 0; k < n - 1; k ++) {
-		imax = k;
-		for (i = k + 1; i < n; i ++)
-			if (fabs(A[i][k]) > fabs(A[imax][k]))
-				imax = i;
-		p[k] = imax;
-		if (imax != k)
-			for (j = 0; j < n; j ++)
-				swap(&A[k][j], &A[imax][j]);
-		if (fabs(A[k][k]) < E)
-			return -1;
-		for (i = k + 1; i < n; i ++)
-			A[i][k] = A[i][k]/A[k][k];
-		for (j = k + 1; j < n; j ++)
-			for (i = k + 1; i < n; i ++)
-				A[i][j] -= A[k][j]*A[i][k];
-	}
-	if (fabs(A[n-1][n-1]) < E)
-		return -1;
-	return 0;
-}
-*/
 void conjugate_gradient(double A[][nmax], double b[], int size, int n_steps) {
-	double x[], r[], p[], rnew, rold, alfa, beta;
+	double x[], r[], p[], aux[], rnew, rold, alfa, beta;
 	int i;
 
 	for (i = 0; i < size; i ++) {
@@ -110,9 +85,10 @@ void conjugate_gradient(double A[][nmax], double b[], int size, int n_steps) {
 	rold = inner_product(r, r, size);
 
 	for (i = 1; i < n_steps; i ++) {
-		alfa = rold / A_norm(A, p, size);
+		aux = matrix_x_vector(A, p, size);
+		alfa = rold / inner_product(p, aux, size);
 		x = vector_sum(x, vector_by_a_scalar(p, alfa, size), size, 1);
-		r = vector_sum(r, vector_by_a_scalar(matrix_x_vector(A, p, size), alfa, size), size, -1);
+		r = vector_sum(r, vector_by_a_scalar(aux, alfa, size), size, -1); /*matrix_x_vector tem uma conta a menos que A_norm, decidir o q fazer*/
 		rnew = inner_product(r, r, size)
 		if (sqrt(rnew) < 1e-10) /* talvez guardar esse inner_product em uma variavel no inicio do lasso para nao ter q calcular denovo*/
             break;
@@ -131,11 +107,12 @@ int main() {
 	printf("Nome do Arquivo: ");
 	scanf("%s", file_name);
 	file = fopen(file_name, "r");
+
+	/* Lendo dados */
 	if (file == NULL) {
 		fprintf(stderr, "Não foi possível abrir o arquivo!\n");
 		return -1;
 	}
-
 	fscanf(file, "%d", &n);
 	for (k = 0; k < n*n; k ++) {
 		fscanf(file, "%d %d", &i, &j);
@@ -147,18 +124,11 @@ int main() {
 	}
 
 	start = clock();
-	if (!lucol(n, A, p)) {
-		printf("Matriz é singular.\n");
-		return -1;
-	}
+	conjugate_gradient(A, b, n, n_steps);
 	end = clock();
 	duration = (double)(end - start) / CLOCKS_PER_SEC;
-	printf("Lucol tempo %e segundos\n", duration);
-	start = clock();
-	sscol(n, A, p, b);
-	end = clock();
-	duration = (double)(end - start) / CLOCKS_PER_SEC;
-	printf("Sscol tempo %e segundos\n", duration);
+	printf("conjugate_gradient tempo %e segundos\n", duration);
+
 	for (i = 0; i < n; i ++) {
 		if (b[i] - (1 + i%(n/100)) > E || b[i] - (1 + i%(n/100)) < -E)
 			printf("Erro! %e  %d %d\n", b[i],-(1 + i%(n/100)), i);
