@@ -2,8 +2,8 @@
 #include <math.h>
 #include <stdio.h>
 #include <time.h>
-#define nmax 700
-#define E 1e-10 /* Acceptable error */
+#define nmax 1001
+#define E 1e-5 /* Acceptable error */
 /* Compilation command: gcc -Wall -Wextra -ansi -pedantic -o ep2 ep2.c -lm */
 
 void swap(double* a, double* b) {
@@ -77,7 +77,10 @@ void conjugate_gradient(double A[][nmax], double b[], int size) {
 
 	rold = inner_product(r, r, size);
     /* result of operations from all void functions are saved at last argument */
-	for (i = 1; i < size; i ++) {
+	/* for (i = 1; i < size; i ++) {*/
+	i = 0;
+	while (1) {
+		i ++;
 		matrix_vector_product(A, p, size, Ap);
 		alfa = rold / inner_product(p, Ap, size); /*step length*/
 		vector_scalar_product(p, alfa, size, aux); 
@@ -92,6 +95,7 @@ void conjugate_gradient(double A[][nmax], double b[], int size) {
         vector_sum(p, r, size, p);
 		rold = rnew;
 	}
+	printf("%d\n", i);
 
 	for (i = 0; i < size; i ++) {
 		b[i] = x[i];
@@ -121,6 +125,7 @@ int main() {
 		return -1;
 	}
 	fscanf(file, "%d", &n);
+
 	for (k = 0; k < n*n; k ++) {
 		fscanf(file, "%d %d", &i, &j);
 		fscanf(file, "%lf", &A[i][j]);
@@ -137,8 +142,8 @@ int main() {
 	printf("conjugate_gradient tempo %e segundos\n", duration);
 
 	for (i = 0; i < n; i ++) {
-		if (b[i] - (1 + i%(n/100)) > E || b[i] - (1 + i%(n/100)) < -E)
-			printf("Erro! %e  %d %d\n", b[i], - (1 + i%(n/100)), i);
+		if (b[i] - (1 + i%(n/100)) > 1e-5 || b[i] - (1 + i%(n/100)) < -1e-5)
+			printf("Erro! %e  %d %d\n", b[i], (1 + i%(n/100)), i);
 	}
 	printf("Fim da Análise!\n");
 	return 0;

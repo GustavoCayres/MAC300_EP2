@@ -3,8 +3,9 @@
 #include <stdio.h>
 #include <time.h>
 #include <string.h>
-#define NMAX 500
+#define NMAX 1000
 #define E 0.0001
+/* NMAX decide o tamanho da matriz e do vetor b */
 
 double random_double() {
 	double r = (double)rand() / RAND_MAX;
@@ -14,7 +15,7 @@ double random_double() {
 int main() {
 	char file_name[50];
 	FILE *file;
-	double A[NMAX][NMAX], T, r;
+	double A[NMAX][NMAX], T, r, x[NMAX], b[NMAX];
 	int i, j;
 
 	srand((unsigned) time(NULL));
@@ -33,16 +34,25 @@ int main() {
 		}
 	}
 
-	fprintf(file, "%d\n", NMAX);
-	for (i = 0; i < NMAX; i ++) {
-		for(j = 0; j < NMAX; j ++) {
-			fprintf(file, "%f ", A[i][j]);
-		}
-		fprintf(file, "\n");
-	}
+	for (i = 0; i < NMAX; i++)
+    	x[i]= 1+i%(NMAX/100);
 
+	for (i = 0; i < NMAX; i++) {
+    	b[i] = 0;
+    	for(j = 0; j < NMAX; j++)
+      		b[i]+= A[i][j]*x[j];
+    }
 
+ 	fprintf(file,"%d",NMAX);
 
+  	for (i=0; i<NMAX; i++)
+    	for (j=0; j<NMAX; j++)
+      		fprintf(file,"\n%3d %3d % .20e",i,j,A[i][j]);
+
+  	for (i=0; i<NMAX; i++)
+      	fprintf(file,"\n%3d % .20e",i,b[i]);
+
+  	fclose(file);
 	return 0;
 }
 
