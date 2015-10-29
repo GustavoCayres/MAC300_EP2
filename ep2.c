@@ -3,8 +3,31 @@
 #include <stdio.h>
 #include <time.h>
 #define nmax 1001
-#define E 1e-5 /* Acceptable error */
+#define E 1e-10 /* Acceptable error */
 /* Compilation command: gcc -Wall -Wextra -ansi -pedantic -o ep2 ep2.c -lm */
+
+/* minha ideia é implementar a matrix como uma lista de lista, como a operação que vamos fazer é Axp, entao guardando
+linha por linha, fica mais facil de implementar essa operação */
+struct column {
+	int column;
+	double value;
+	struct *column;
+};
+
+
+struct row {
+	int row;
+	struct row *down;
+	struct column *right;
+};
+
+struct sparse {
+	int nrow;
+	int ncolumn;
+	struct row *first_row;
+};
+
+
 
 void swap(double* a, double* b) {
 	double temp;

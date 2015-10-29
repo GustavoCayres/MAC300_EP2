@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <time.h>
 #include <string.h>
-#define NMAX 1000
+#define NMAX 500
 #define E 0.0001
 /* NMAX decide o tamanho da matriz e do vetor b */
 
