@@ -7,7 +7,7 @@
 /* Compilation command: gcc -Wall -Wextra -ansi -pedantic -o ep2 ep2.c -lm */
 
 /* minha ideia é implementar a matrix como uma lista de lista, como a operação que vamos fazer é Axp, entao guardando
-linha por linha, fica mais facil de implementar essa operação */
+linha por linha, fica mais facil de implementar essa operação, e para ler do arquivo vai ser fácil */
 struct column {
 	int column;
 	double value;
