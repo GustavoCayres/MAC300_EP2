@@ -9,11 +9,11 @@
 /* minha ideia é implementar a matrix como uma lista de lista, como a operação que vamos fazer é Axp, entao guardando
 linha por linha, fica mais facil de implementar essa operação, e para ler do arquivo vai ser fácil */
 struct column {
-	int column;
+	int col;
 	double value;
-	struct *column;
+	struct column *right;
 };
-
+typedef column* coluna
 
 struct row {
 	int row;
@@ -21,11 +21,64 @@ struct row {
 	struct column *right;
 };
 
-struct sparse {
-	int nrow;
-	int ncolumn;
-	struct row *first_row;
-};
+typedef struct row* sparse_matrix
+
+void create_matrix(sparse_matrix sp) {
+	row x;
+	x = malloc(sizeof(row));
+	x->row = -1;
+	x->down = NULL;
+	x->right = NULL;
+	*sp = x;
+}
+
+void insert(sparse_matrix sp, int i, int j, double value) {
+	row rnew;
+	column cnew, *pointer;
+	sparse_matrix aux;
+	if(sp->row == -1) {
+		sp->row = i;
+		cnew = malloc(sizeof(column));
+		cnew->col = j;
+		cnew->value = value;
+		cnew->right = NULL;
+		sp->right = cnew;
+	}
+	else {
+		cnew = malloc(sizeof(column));
+		cnew->col = j;
+		cnew->value = value;
+		cnew->right = NULL;
+		rnew = malloc(sizeof(row));
+		rnew->row = i;
+		rnew->down = NULL;
+		rnew->right = cnew;
+		for(aux = sp; aux->row != i; aux = aux->down);
+		for(*pointer = aux->right; *pointer->right != NULL; *pointer = *pointer->right);
+		*pointer->right = cnew;
+	}
+}
+
+void free_right(coluna c){
+	coluna atual, next;
+	atual=c;
+	while(atual != NULL){
+		next = atual->right;
+		free(atual);
+		atual = *next;
+	}
+}
+
+void free_sparse_matrix(sparse_matrix sp){
+	sparse_matrix down, right;
+	if(sp != NULL){
+		down = sp->down;
+		right = t->right;
+		free(sp);
+		free_right(right);
+		free_sparse_matrix(down);
+	}
+}
 
 
 
