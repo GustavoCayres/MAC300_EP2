@@ -50,17 +50,17 @@ void insert(sparse_matrix sp, int i, int j, double value) {
 		cnew->col = j;
 		cnew->value = value;
 		cnew->right = NULL;
-		for(aux = sp; aux->down != NULL && aux->row != i; aux = aux->down);
-		if(aux->down == NULL) {
+		for(aux = sp; aux->row != i && aux->down != NULL; aux = aux->down);
+		if(aux->row == i) {
+			for(pointer = aux->right; pointer->right != NULL; pointer = pointer->right);
+			pointer->right = cnew;
+		}
+		else {
 			rnew = malloc(sizeof(row));
 			rnew->row = i;
 			rnew->down = NULL;
 			rnew->right = cnew;
 			aux->down = rnew;
-		}
-		else{
-			for(pointer = aux->right; pointer->right != NULL; pointer = pointer->right);
-			pointer->right = cnew;
 		}
 	}
 }
