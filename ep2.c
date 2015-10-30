@@ -12,16 +12,17 @@ struct column {
 	int col;
 	double value;
 	struct column *right;
-};
-typedef column* coluna
+}column;
+
+typedef struct column* coluna;
 
 struct row {
 	int row;
 	struct row *down;
 	struct column *right;
-};
+}row;
 
-typedef struct row* sparse_matrix
+typedef struct row* sparse_matrix;
 
 void create_matrix(sparse_matrix sp) {
 	row x;
@@ -29,7 +30,7 @@ void create_matrix(sparse_matrix sp) {
 	x->row = -1;
 	x->down = NULL;
 	x->right = NULL;
-	*sp = x;
+	sp = x;
 }
 
 void insert(sparse_matrix sp, int i, int j, double value) {
@@ -54,30 +55,30 @@ void insert(sparse_matrix sp, int i, int j, double value) {
 		rnew->down = NULL;
 		rnew->right = cnew;
 		for(aux = sp; aux->row != i; aux = aux->down);
-		for(*pointer = aux->right; *pointer->right != NULL; *pointer = *pointer->right);
-		*pointer->right = cnew;
+		for(*pointer = aux->right; (*pointer)->right != NULL; *pointer = (*pointer)->right);
+		(*pointer)->right = cnew;
 	}
 }
 
-void free_right(coluna c){
+void free_right(coluna c) {  
 	coluna atual, next;
 	atual=c;
 	while(atual != NULL){
 		next = atual->right;
 		free(atual);
-		atual = *next;
+		atual = next;
 	}
 }
 
-void free_sparse_matrix(sparse_matrix sp){
-	sparse_matrix down, right;
+void free_sparse_matrix(sparse_matrix sp) {
+	sparse_matrix down;
 	if(sp != NULL){
 		down = sp->down;
-		right = t->right;
+		free_right(sp->right);
 		free(sp);
-		free_right(right);
 		free_sparse_matrix(down);
 	}
+}}
 }
 
 
