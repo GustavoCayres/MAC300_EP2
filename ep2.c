@@ -8,7 +8,7 @@
 
 /* minha ideia é implementar a matrix como uma lista de lista, como a operação que vamos fazer é Axp, entao guardando
 linha por linha, fica mais facil de implementar essa operação, e para ler do arquivo vai ser fácil */
-struct column {
+struct column{
 	int col;
 	double value;
 	struct column *right;
@@ -16,7 +16,7 @@ struct column {
 
 typedef struct column* coluna;
 
-struct row {
+struct row{
 	int row;
 	struct row *down;
 	struct column *right;
@@ -24,18 +24,18 @@ struct row {
 
 typedef struct row* sparse_matrix;
 
-void create_matrix(sparse_matrix sp) {
-	row x;
-	x = malloc(sizeof(row));
+void create_matrix(sparse_matrix *sp) {
+	sparse_matrix x;
+	x = malloc(sizeof(sparse_matrix));
 	x->row = -1;
 	x->down = NULL;
 	x->right = NULL;
-	sp = x;
+	*sp = x;
 }
 
 void insert(sparse_matrix sp, int i, int j, double value) {
-	row rnew;
-	column cnew, *pointer;
+	sparse_matrix rnew;
+	coluna cnew, pointer;
 	sparse_matrix aux;
 	if(sp->row == -1) {
 		sp->row = i;
@@ -50,17 +50,22 @@ void insert(sparse_matrix sp, int i, int j, double value) {
 		cnew->col = j;
 		cnew->value = value;
 		cnew->right = NULL;
-		rnew = malloc(sizeof(row));
-		rnew->row = i;
-		rnew->down = NULL;
-		rnew->right = cnew;
-		for(aux = sp; aux->row != i; aux = aux->down);
-		for(*pointer = aux->right; (*pointer)->right != NULL; *pointer = (*pointer)->right);
-		(*pointer)->right = cnew;
+		for(aux = sp; aux->down != NULL && aux->row != i; aux = aux->down);
+		if(aux->down == NULL) {
+			rnew = malloc(sizeof(row));
+			rnew->row = i;
+			rnew->down = NULL;
+			rnew->right = cnew;
+			aux->down = rnew;
+		}
+		else{
+			for(pointer = aux->right; pointer->right != NULL; pointer = pointer->right);
+			pointer->right = cnew;
+		}
 	}
 }
 
-void free_right(coluna c) {  
+void free_right(coluna c){
 	coluna atual, next;
 	atual=c;
 	while(atual != NULL){
@@ -70,7 +75,7 @@ void free_right(coluna c) {
 	}
 }
 
-void free_sparse_matrix(sparse_matrix sp) {
+void free_sparse_matrix(sparse_matrix sp){
 	sparse_matrix down;
 	if(sp != NULL){
 		down = sp->down;
@@ -78,7 +83,6 @@ void free_sparse_matrix(sparse_matrix sp) {
 		free(sp);
 		free_sparse_matrix(down);
 	}
-}}
 }
 
 

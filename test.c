@@ -24,19 +24,18 @@ struct row{
 
 typedef struct row* sparse_matrix;
 
-void create_matrix(sparse_matrix sp) {
+void create_matrix(sparse_matrix *sp) {
 	sparse_matrix x;
 	x = malloc(sizeof(sparse_matrix));
 	x->row = -1;
 	x->down = NULL;
 	x->right = NULL;
-	sp = x;
+	*sp = x;
 }
 
 void insert(sparse_matrix sp, int i, int j, double value) {
-	row rnew;
-	column cnew;
-	column *pointer;
+	sparse_matrix rnew;
+	coluna cnew, pointer;
 	sparse_matrix aux;
 	if(sp->row == -1) {
 		sp->row = i;
@@ -60,8 +59,8 @@ void insert(sparse_matrix sp, int i, int j, double value) {
 			aux->down = rnew;
 		}
 		else{
-			for(*pointer = aux->right; (*pointer)->right != NULL; *pointer = (*pointer)->right);
-			(*pointer)->right = cnew;
+			for(pointer = aux->right; pointer->right != NULL; pointer = pointer->right);
+			pointer->right = cnew;
 		}
 	}
 }
@@ -86,14 +85,25 @@ void free_sparse_matrix(sparse_matrix sp){
 	}
 }
 
+void printa_matrix(sparse_matrix sp){
+	sparse_matrix aux;
+	coluna atual;
+	for(aux = sp; aux != NULL; aux = aux->down) {
+		for(atual = aux->right; atual != NULL; atual = atual->right)
+			printf("%f, %d, %d\n",atual->value, aux->row, atual->col);
+	}
+}
+
 int main() {
 	sparse_matrix sp;
 	int i, j;
+	create_matrix(&sp);
+	printf("crio\n");
+	printf("%d\n", sp->row);
 	for(i = 0; i<7; i++)
 		for(j=0; j<3; j++)
 			insert(sp, i, j, i+j+.5);
-
-	printf("%f %d,%d\n", sp->right->value, sp->row, sp->right->col);
+	printa_matrix(sp);
 	free_sparse_matrix(sp);
 	return 1;
 }
