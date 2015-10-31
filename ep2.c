@@ -85,15 +85,6 @@ void free_sparse_matrix(sparse_matrix sp){
 	}
 }
 
-void printa_matrix(sparse_matrix sp){
-	sparse_matrix aux;
-	column atual;
-	for(aux = sp; aux != NULL; aux = aux->down) {
-		for(atual = aux->right; atual != NULL; atual = atual->right)
-			printf("%f, %d, %d\n",atual->value, aux->row, atual->col);
-	}
-}
-
 void swap(double* a, double* b) {
 	double temp;
 	temp = *a;
