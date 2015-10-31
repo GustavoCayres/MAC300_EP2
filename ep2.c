@@ -85,7 +85,14 @@ void free_sparse_matrix(sparse_matrix sp){
 	}
 }
 
-
+void printa_matrix(sparse_matrix sp){
+	sparse_matrix aux;
+	column atual;
+	for(aux = sp; aux != NULL; aux = aux->down) {
+		for(atual = aux->right; atual != NULL; atual = atual->right)
+			printf("%f, %d, %d\n",atual->value, aux->row, atual->col);
+	}
+}
 
 void swap(double* a, double* b) {
 	double temp;
@@ -176,7 +183,6 @@ void conjugate_gradient(sparse_matrix A, double b[], int size) {
         vector_sum(p, r, size, p);
 		rold = rnew;
 	}
-	printf("%d\n", i);
 
 	for (i = 0; i < size; i ++) {
 		b[i] = x[i];
@@ -212,17 +218,16 @@ int main() {
 	}
 
 	fscanf(file, "%d", &n);
-
 	for (k = 0; k < n*n; k ++) {
 		fscanf(file, "%d %d", &i, &j);
 		fscanf(file, "%lf", &aux);
-		insert(A, i, j, aux);
+		if(aux != 0)
+			insert(A, i, j, aux);
 	}
 	for (k= 0; k < n; k ++) {
 		fscanf(file, "%d", &i);
 		fscanf(file, "%lf", &b[i]);
 	}
-
 	start = clock();
 	conjugate_gradient(A, b, n);
 	end = clock();
