@@ -1,3 +1,10 @@
+/*********************************************/
+/*Grupo:                                     */
+/*  Gustavo Rodrigues Cayres, nUSP: 8584323  */
+/*   Pedro Marcondes, nUSP: 8941168          */
+/*********************************************/
+
+
 #include <stdlib.h>
 #include <math.h>
 #include <stdio.h>
