@@ -2,7 +2,6 @@
 #include <math.h>
 #include <stdio.h>
 #include <time.h>
-#define nmax 1001
 #define E 1e-10 /* Acceptable error */
 /* Compilation command: gcc -Wall -Wextra -ansi -pedantic -o ep2 ep2.c -lm */
 
@@ -85,15 +84,9 @@ void free_sparse_matrix(sparse_matrix sp){
 	}
 }
 
-void swap(double* a, double* b) {
-	double temp;
-	temp = *a;
-	*a = *b;
-	*b = temp;
-}
 
 /* calculates the inner product between vectors v1 and v2 */
-double inner_product(double v1[], double v2[], int size) {
+double inner_product(double *v1, double *v2, int size) {
 	int i;
 	double inner_product = 0;
 
@@ -104,7 +97,7 @@ double inner_product(double v1[], double v2[], int size) {
 }
 
 /* calculates the multiplication between a matrix and a vector */
-void matrix_vector_product(sparse_matrix A, double v[], double result[]) {
+void matrix_vector_product(sparse_matrix A, double *v, double *result) {
 	sparse_matrix aux;
 	column pointer;
 
@@ -117,7 +110,7 @@ void matrix_vector_product(sparse_matrix A, double v[], double result[]) {
 }
 
 /* multiplies a vector by a scalar */
-void vector_scalar_product(double v[], double alfa, int size, double result[]) {
+void vector_scalar_product(double *v, double alfa, int size, double *result) {
 	int i;
 
 	for (i = 0; i < size; i ++)
@@ -125,7 +118,7 @@ void vector_scalar_product(double v[], double alfa, int size, double result[]) {
 }
 
 /* adds vectors v1 and v2 */
-void vector_sum(double v1[], double v2[], int size, double result[]) {
+void vector_sum(double *v1, double *v2, int size, double *result) {
 	int i;
 
 	for (i = 0; i < size; i ++)
@@ -133,15 +126,15 @@ void vector_sum(double v1[], double v2[], int size, double result[]) {
 }
 
 /* subtracts vector v2 from v1 */
-void vector_subtraction(double v1[], double v2[], int size, double result[]) {
+void vector_subtraction(double *v1, double *v2, int size, double *result) {
 	int i;
 
 	for (i = 0; i < size; i ++)
 		result[i] = v1[i] - v2[i];
 }
 
-/*solution saved in b[] */
-void conjugate_gradient(sparse_matrix A, double b[], int size) {
+/*solution saved in b */
+void conjugate_gradient(sparse_matrix A, double *b, int size) {
 	double *x, *r, *p, *Ap, *aux, rnew, rold, alfa;
 	int i;
 
@@ -190,11 +183,11 @@ int main() {
 	char file_name[100];
 	FILE *file;
 	sparse_matrix A;
-	double b[nmax], duration, aux;
+	double *b;
+	double duration, aux;
 	int n, i, j, k;
 	clock_t start, end;
-	
-	create_matrix(&A); 
+ 
 	printf("Nome do Arquivo: ");
 	scanf("%s", file_name);
 	file = fopen(file_name, "r");
@@ -206,6 +199,9 @@ int main() {
 	}
 
 	fscanf(file, "%d", &n);
+	create_matrix(&A);
+	b = malloc(n*sizeof(double));
+
 	for (k = 0; k < n*n; k ++) {
 		fscanf(file, "%d %d", &i, &j);
 		fscanf(file, "%lf", &aux);
@@ -216,6 +212,7 @@ int main() {
 		fscanf(file, "%d", &i);
 		fscanf(file, "%lf", &b[i]);
 	}
+	printf("Matriz foi lida com sucesso.\n");
 	start = clock();
 	conjugate_gradient(A, b, n);
 	end = clock();
@@ -230,5 +227,6 @@ int main() {
 	fclose(file);
 	printf("Fim da Análise!\n");
 	free_sparse_matrix(A);
+	free(b);
 	return 0;
 }
