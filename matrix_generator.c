@@ -3,16 +3,15 @@
 #include <stdio.h>
 #include <time.h>
 #include <string.h>
-#define NMAX 2500
 #define E 0.0001
-/* NMAX decide o tamanho da matriz e do vetor b */
+
 
 double random_double() {
 	double r = (double)rand() / RAND_MAX;
     return (-1 + r * 2);
 }
 
-double **Alocar_matriz_real (int m, int n){
+double **Alocar_matriz_real (int m, int n) {
 	double **v; /* ponteiro para a matriz */
 	int i; /* variavel auxiliar */
 	if (m < 1 || n < 1) { /* verifica parametros recebidos */
@@ -38,7 +37,7 @@ double **Alocar_matriz_real (int m, int n){
 }
 
 
-void Liberar_matriz_real(int m,int n,double **v){
+void Liberar_matriz_real(int m,int n,double **v) {
 	int i; /* variavel auxiliar */
 	if (v == NULL)
 		return ;
@@ -48,26 +47,27 @@ void Liberar_matriz_real(int m,int n,double **v){
 	}
 	for(i = 0; i < m; i++) free (v[i]);/* libera as linhas da matriz */
 	free (v);/* libera a matriz */
-	/* retorna um ponteiro nulo */
 }
 
 int main() {
 	char file_name[50];
 	FILE *file;
-	double **A, T, r, x[NMAX], b[NMAX];
-	int i, j;
+	double **A, T, r, *x, *b;
+	int i, j, n;
 
 	srand((unsigned) time(NULL));
-	printf("Entre com T: \n");
-	scanf("%lf", &T);
-	sprintf(file_name, "sparse_matrix_%d.txt", NMAX);
+	printf("Entre com T e n: \n");
+	scanf("%lf %d", &T, &n);
+	sprintf(file_name, "sparse_matrix_%d.txt", n);
 	file = fopen(file_name, "w" );
 
-	A = Alocar_matriz_real(NMAX, NMAX);
+	A = Alocar_matriz_real(n, n);
+	b = malloc(n*sizeof(double));
+	x = malloc(n*sizeof(double));
 
-	for (i = 0; i < NMAX; i ++) {
+	for (i = 0; i < n; i ++) {
 		A[i][i] = 1;
-		for(j = i + 1; j < NMAX; j ++) {
+		for(j = i + 1; j < n; j ++) {
 			r = random_double();
 			if (fabs(r) > T)
 				r = 0.0;
@@ -75,67 +75,27 @@ int main() {
 		}
 	}
 
-	for (i = 0; i < NMAX; i++)
-    	x[i]= 1+i%(NMAX/100);
+	for (i = 0; i < n; i++)
+    	x[i]= 1+i%(n/100);
 
-	for (i = 0; i < NMAX; i++) {
+	for (i = 0; i < n; i++) {
     	b[i] = 0;
-    	for(j = 0; j < NMAX; j++)
+    	for(j = 0; j < n; j++)
       		b[i]+= A[i][j]*x[j];
     }
 
- 	fprintf(file,"%d",NMAX);
+ 	fprintf(file,"%d",n);
 
-  	for (i=0; i<NMAX; i++)
-    	for (j=0; j<NMAX; j++)
+  	for (i=0; i<n; i++)
+    	for (j=0; j<n; j++)
       		fprintf(file,"\n%3d %3d % .20e",i,j,A[i][j]);
 
-  	for (i=0; i<NMAX; i++)
+  	for (i=0; i<n; i++)
       	fprintf(file,"\n%3d % .20e",i,b[i]);
 
-    Liberar_matriz_real(NMAX,NMAX,A);
+    Liberar_matriz_real(n,n,A);
+    free(b);
+    free(x);
   	fclose(file);
 	return 0;
 }
-
-
-	/*
-	char file_name[100];
-	FILE *file;
-	double A[nmax][nmax], b[nmax], duration;
-	int n, i, j, k, p[nmax], size;
-	clock_t start, end;
-
-	printf("Tamanho da matriz: ");
-	scanf("%d", size);
-
-	file = fopen(file_name, "r");
-
-	
-	if (file == NULL) {
-		fprintf(stderr, "Não foi possível abrir o arquivo!\n");
-		return -1;
-	}
-	fscanf(file, "%d", &n);
-	for (k = 0; k < n*n; k ++) {
-		fscanf(file, "%d %d", &i, &j);
-		fscanf(file, "%lf", &A[i][j]);
-	}
-	for (k= 0; k < n; k ++) {
-		fscanf(file, "%d", &i);
-		fscanf(file, "%lf", &b[i]);
-	}
-
-	start = clock();
-	conjugate_gradient(A, b, n, n_steps);
-	end = clock();
-	duration = (double)(end - start) / CLOCKS_PER_SEC;
-	printf("conjugate_gradient tempo %e segundos\n", duration);
-
-	for (i = 0; i < n; i ++) {
-		if (b[i] - (1 + i%(n/100)) > E || b[i] - (1 + i%(n/100)) < -E)
-			printf("Erro! %e  %d %d\n", b[i],-(1 + i%(n/100)), i);
-	}
-	printf("Fim da Análise!\n");
-	return 0;
-	*/
