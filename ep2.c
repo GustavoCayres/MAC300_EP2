@@ -162,9 +162,8 @@ void conjugate_gradient(sparse_matrix A, double *b, int size) {
 		rnew = inner_product(r, r, size);
 		if (sqrt(rnew) < E)
                         break;
-
-        vector_scalar_product(p, rnew / rold, size, p);
-        vector_sum(p, r, size, p);
+                vector_scalar_product(p, rnew / rold, size, p);
+                vector_sum(p, r, size, p);
 		rold = rnew;
 	}
 
