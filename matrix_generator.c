@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <time.h>
 #include <string.h>
-#define NMAX 500
+#define NMAX 2500
 #define E 0.0001
 /* NMAX decide o tamanho da matriz e do vetor b */
 
@@ -12,10 +12,49 @@ double random_double() {
     return (-1 + r * 2);
 }
 
+double **Alocar_matriz_real (int m, int n){
+	double **v; /* ponteiro para a matriz */
+	int i; /* variavel auxiliar */
+	if (m < 1 || n < 1) { /* verifica parametros recebidos */
+		printf ("** Erro: Parametro invalido **\n");
+		return (NULL);
+	}
+	/* aloca as linhas da matriz */
+	v = (double **) calloc (m, sizeof(double *));
+	if (v == NULL) {
+		printf ("** Erro: Memoria Insuficiente **");
+		return (NULL);
+	}
+
+	/* aloca as colunas da matriz */
+	for ( i = 0; i < m; i++ ) {
+		v[i] = (double*) calloc (n, sizeof(double));
+		if (v[i] == NULL) {
+			printf ("** Erro: Memoria Insuficiente **");
+			return (NULL);
+		}
+	}
+	return (v); /* retorna o ponteiro para a matriz */
+}
+
+
+void Liberar_matriz_real(int m,int n,double **v){
+	int i; /* variavel auxiliar */
+	if (v == NULL)
+		return ;
+	if(m < 1 || n < 1) {/* verifica parametros recebidos */
+		printf ("** Erro: Parametro invalido **\n");
+		return ;
+	}
+	for(i = 0; i < m; i++) free (v[i]);/* libera as linhas da matriz */
+	free (v);/* libera a matriz */
+	/* retorna um ponteiro nulo */
+}
+
 int main() {
 	char file_name[50];
 	FILE *file;
-	double A[NMAX][NMAX], T, r, x[NMAX], b[NMAX];
+	double **A, T, r, x[NMAX], b[NMAX];
 	int i, j;
 
 	srand((unsigned) time(NULL));
@@ -23,6 +62,8 @@ int main() {
 	scanf("%lf", &T);
 	sprintf(file_name, "sparse_matrix_%d.txt", NMAX);
 	file = fopen(file_name, "w" );
+
+	A = Alocar_matriz_real(NMAX, NMAX);
 
 	for (i = 0; i < NMAX; i ++) {
 		A[i][i] = 1;
@@ -52,6 +93,7 @@ int main() {
   	for (i=0; i<NMAX; i++)
       	fprintf(file,"\n%3d % .20e",i,b[i]);
 
+    Liberar_matriz_real(NMAX,NMAX,A);
   	fclose(file);
 	return 0;
 }

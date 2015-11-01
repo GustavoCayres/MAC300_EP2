@@ -194,10 +194,7 @@ int main() {
 	int n, i, j, k;
 	clock_t start, end;
 	
-	A = malloc(sizeof(row));
-	A->down = NULL;
-	A->right = NULL;
-	A->row = -1; 
+	create_matrix(&A); 
 	printf("Nome do Arquivo: ");
 	scanf("%s", file_name);
 	file = fopen(file_name, "r");
@@ -230,6 +227,8 @@ int main() {
 		if (b[i] - (1 + i%(n/100)) > 1e-5 || b[i] - (1 + i%(n/100)) < -1e-5)
 			printf("Erro! %e  %d %d\n", b[i], (1 + i%(n/100)), i);
 	}
+	fclose(file);
 	printf("Fim da Análise!\n");
+	free_sparse_matrix(A);
 	return 0;
 }
